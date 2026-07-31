@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}View Parking Spots - Parkora{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2><i class="bi bi-p-square"></i> Parking Spots - {{ parking_lot.prime_location_name }}</h2>
+        <hr>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Address:</strong> {{ parking_lot.address }}</p>
+                        <p><strong>PIN Code:</strong> {{ parking_lot.pin_code }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Price per Hour:</strong> ₹{{ parking_lot.price }}</p>
+                        <p><strong>Total Spots:</strong> {{ parking_lot.maximum_number_of_spots }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table class="table">
+  <thead>
+    <tr>
+      <th>Spot #</th>
+      <th>Status</th>
+      <th>User / Reservation</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for entry in spot_details %}
+    {% set spot = entry.spot %}
+    <tr>
+      <td>{{ spot.spot_number }}</td>
+      <td>
+        {% if spot.status == 'O' %}
+          <span class="badge bg-danger">Occupied</span>
+        {% else %}
+          <span class="badge bg-success">Available</span>
+        {% endif %}
+      </td>
+      <td>
+        {% if entry.user %}
+          {{ entry.user.username }}<br>
+          Since {{ entry.reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M') }}
+        {% else %}
+          &mdash;
+        {% endif %}
+      </td>
+      <td>
+        {% if spot.status == 'A' %}
+          <!-- Delete available spot -->
+          <form action="{{ url_for('delete_parking_spot', lot_id=parking_lot.id, spot_id=spot.id) }}"
+                method="post" style="display:inline">
+            <button class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Delete {{ spot.spot_number }}?')">
+              Delete
+            </button>
+          </form>
+        {% else %}
+          <!-- View details of occupied spot -->
+          <a href="{{ url_for('view_parking_spot_detail', lot_id=parking_lot.id, spot_id=spot.id) }}"
+             class="btn btn-sm btn-outline-primary">
+            Details
+          </a>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Parking Spots Layout</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-success me-2">Available</span>
+                    <span class="badge bg-danger">Occupied</span>
+                </div>
+                
+                <div class="parking-spots-container">
+                    {% for detail in spot_details %}
+                        <div class="parking-spot {{ 'available' if detail.spot.status == 'A' else 'occupied' }}"
+                             data-bs-toggle="modal" 
+                             data-bs-target="#spotModal{{ detail.spot.id }}">
+                            {{ detail.spot.spot_number }}
+                        </div>
+                        
+                        <!-- Modal for each spot -->
+                        <div class="modal fade" id="spotModal{{ detail.spot.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ detail.spot.spot_number }} Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge bg-{{ 'success' if detail.spot.status == 'A' else 'danger' }}">
+                                                {{ 'Available' if detail.spot.status == 'A' else 'Occupied' }}
+                                            </span>
+                                        </p>
+                                        {% if detail.spot.status == 'O' and detail.reservation %}
+                                            <hr>
+                                            <h6>Current Reservation:</h6>
+                                            <p><strong>User:</strong> {{ detail.user.username }}</p>
+                                            <p><strong>Email:</strong> {{ detail.user.email }}</p>
+                                            <p><strong>Parked Since:</strong> {{ detail.reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                                            <p><strong>Duration:</strong> 
+                                                <span id="duration-{{ detail.spot.id }}"></span>
+                                            </p>
+                                            <script>
+                                                (function() {
+                                                    function updateDuration() {
+                                                        const parkingTime = new Date("{{ detail.reservation.parking_timestamp }}");
+                                                        const now = new Date();
+                                                        const diff = now - parkingTime;
+                                                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                                                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                                                        document.getElementById('duration-{{ detail.spot.id }}').textContent = `${hours}h ${minutes}m`;
+                                                    }
+                                                    updateDuration();
+                                                    setInterval(updateDuration, 60000);
+                                                })();
+                                            </script>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .parking-spots-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+</style>
+{% endblock %}

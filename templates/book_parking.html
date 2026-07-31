@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Find Parking · Parkora{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <span class="recommended-label mb-2"><i class="bi bi-stars"></i> Smart recommendation enabled</span>
+        <h2 class="mb-1"><i class="bi bi-car-front"></i> Find Parking</h2>
+        <p class="text-muted mb-0">Results prioritize higher availability and lower hourly price.</p>
+    </div>
+    <form method="GET" class="d-flex" role="search">
+        <input class="form-control me-2" type="search" name="q" value="{{ search_query }}" placeholder="Location, address, or PIN" aria-label="Search parking lots">
+        <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+    </form>
+</div>
+
+{% if parking_lots %}
+<div class="row">
+    {% for lot_info in parking_lots %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 {{ 'recommended-card' if lot_info.is_recommended else '' }}">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ lot_info.lot.prime_location_name }}</h5>
+                {% if lot_info.is_recommended %}
+                <span class="badge bg-light text-success"><i class="bi bi-stars"></i> Best match</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><i class="bi bi-geo-alt"></i> <strong>Address:</strong> {{ lot_info.lot.address }}</p>
+                <p class="mb-2"><i class="bi bi-pin-map"></i> <strong>PIN Code:</strong> {{ lot_info.lot.pin_code }}</p>
+                <p class="mb-2"><i class="bi bi-cash"></i> <strong>Price:</strong> ₹{{ lot_info.lot.price }} per hour</p>
+                <p class="mb-3">
+                    <i class="bi bi-p-square"></i> 
+                    <strong>Available Spots:</strong> 
+                    <span class="badge bg-success">{{ lot_info.available_spots }}</span> 
+                    out of {{ lot_info.lot.maximum_number_of_spots }}
+                </p>
+                
+                <div class="progress mb-3">
+                    {% set occupied_percentage = ((lot_info.lot.maximum_number_of_spots - lot_info.available_spots) / lot_info.lot.maximum_number_of_spots * 100)|int %}
+                    <div class="progress-bar {{ 'bg-success' if occupied_percentage < 50 else 'bg-warning' if occupied_percentage < 80 else 'bg-danger' }}" 
+                         role="progressbar" 
+                         style="width: {{ occupied_percentage }}%"
+                         aria-valuenow="{{ occupied_percentage }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ occupied_percentage }}% Full
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <form method="POST" action="{{ url_for('confirm_booking', lot_id=lot_info.lot.id) }}"
+                          onsubmit="return confirm('Book the first available spot at {{ lot_info.lot.prime_location_name }}?')">
+                        <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Book This Location
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> 
+    <strong>No matching parking lots</strong>
+    <p class="mb-0">Try a different location or check again when more spots become available.</p>
+</div>
+{% endif %}
+
+<div class="mt-3">
+    <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

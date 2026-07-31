@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Parkora">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1665d8"/>
+      <stop offset="1" stop-color="#00a896"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"/>
+  <path d="M20 14h14c10 0 16 5 16 14S44 42 34 42h-6v8h-8V14Zm8 8v12h6c5 0 8-2 8-6s-3-6-8-6h-6Z" fill="#fff"/>
+  <circle cx="47" cy="47" r="8" fill="#ffb703"/>
+  <path d="m44 47 2 2 4-5" fill="none" stroke="#102a43" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"/>
+</svg>

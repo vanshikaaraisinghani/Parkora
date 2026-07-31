@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Create Parking Lot - Parkora{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Create New Parking Lot</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('create_parking_lot') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.prime_location_name.label(class="form-label") }}
+                        {{ form.prime_location_name(class="form-control" + (" is-invalid" if form.prime_location_name.errors else "")) }}
+                        {% if form.prime_location_name.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.prime_location_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.price.label(class="form-label") }}
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else "")) }}
+                        </div>
+                        {% if form.price.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.price.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.address.label(class="form-label") }}
+                        {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else ""), rows="3") }}
+                        {% if form.address.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.address.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.pin_code.label(class="form-label") }}
+                        {{ form.pin_code(class="form-control" + (" is-invalid" if form.pin_code.errors else ""), maxlength="6") }}
+                        {% if form.pin_code.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.pin_code.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.maximum_number_of_spots.label(class="form-label") }}
+                        {{ form.maximum_number_of_spots(class="form-control" + (" is-invalid" if form.maximum_number_of_spots.errors else "")) }}
+                        {% if form.maximum_number_of_spots.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.maximum_number_of_spots.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">Parking spots will be automatically created based on this number.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

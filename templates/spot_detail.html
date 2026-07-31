@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Spot {{ spot.spot_number }} Details</h2>
+  <dl class="row">
+    <dt class="col-sm-3">User</dt>
+    <dd class="col-sm-9">{{ user.username }} ({{ user.email }})</dd>
+
+    <dt class="col-sm-3">Phone</dt>
+    <dd class="col-sm-9">{{ user.phone or '—' }}</dd>
+
+    <dt class="col-sm-3">Parked At</dt>
+    <dd class="col-sm-9">{{ reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+
+    <dt class="col-sm-3">Cost/hr</dt>
+    <dd class="col-sm-9">₹{{ reservation.parking_cost }}</dd>
+  </dl>
+
+  <a href="{{ url_for('view_parking_spots', lot_id=spot.lot_id) }}" class="btn btn-secondary">
+    ← Back to Spots
+  </a>
+{% endblock %}

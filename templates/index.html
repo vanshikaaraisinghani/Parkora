@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Parkora · Smart Parking{% endblock %}
+
+{% block content %}
+<section class="parkora-hero mt-3 mb-5">
+    <div class="row align-items-center g-5 position-relative" style="z-index: 1;">
+        <div class="col-lg-7">
+            <span class="hero-badge mb-3"><i class="bi bi-broadcast-pin"></i> Live space intelligence</span>
+            <h1 class="display-3 fw-bold mb-3">Find space.<br>Save time.</h1>
+            <p class="lead text-white-50 mb-4">
+                Parkora pairs automatic spot allocation with transparent pricing, live occupancy, and personal parking insights.
+            </p>
+
+            {% if not current_user.is_authenticated %}
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-light btn-lg px-4" href="{{ url_for('register') }}">
+                    <i class="bi bi-person-plus me-2"></i>Create account
+                </a>
+                <a class="btn btn-outline-light btn-lg px-4" href="{{ url_for('login') }}">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign in
+                </a>
+            </div>
+            {% elif current_user.is_admin %}
+            <a class="btn btn-light btn-lg px-4" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>Open operations dashboard
+            </a>
+            {% else %}
+            <a class="btn btn-light btn-lg px-4" href="{{ url_for('book_parking') }}">
+                <i class="bi bi-car-front me-2"></i>Find my parking space
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="hero-parking-grid" aria-label="Live parking availability illustration">
+                <div class="hero-space"><i class="bi bi-check-lg"></i></div>
+                <div class="hero-space occupied"><i class="bi bi-car-front-fill"></i></div>
+                <div class="hero-space"><i class="bi bi-check-lg"></i></div>
+                <div class="hero-space"><i class="bi bi-check-lg"></i></div>
+                <div class="hero-space occupied"><i class="bi bi-car-front-fill"></i></div>
+                <div class="hero-space"><i class="bi bi-check-lg"></i></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-4">
+    <div class="text-center mb-5">
+        <span class="text-success fw-bold text-uppercase small">A calmer parking experience</span>
+        <h2 class="fw-bold mt-2">Built around the decisions that matter</h2>
+        <p class="text-muted">Availability, price, time, and cost—without the guesswork.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="bi bi-stars"></i></div>
+                <h5>Smart lot recommendation</h5>
+                <p class="text-muted mb-0">Parkora ranks available lots using capacity and hourly price, then highlights the best current option.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="bi bi-stopwatch"></i></div>
+                <h5>Live parking meter</h5>
+                <p class="text-muted mb-0">See active duration and estimated cost update while your vehicle remains parked.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <h5>Useful personal insights</h5>
+                <p class="text-muted mb-0">Track visits, total spend, average duration, favorite locations, and monthly parking patterns.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="my-5 p-4 p-md-5 rounded-3 bg-white shadow-sm border">
+    <div class="row align-items-center g-4">
+        <div class="col-md-8">
+            <span class="recommended-label mb-2"><i class="bi bi-lightning-charge-fill"></i> Automatic allocation</span>
+            <h3 class="fw-bold">Choose the lot. Parkora handles the spot.</h3>
+            <p class="text-muted mb-0">Every booking receives the first available space automatically, keeping allocation fast and fair.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            {% if current_user.is_authenticated and not current_user.is_admin %}
+            <a href="{{ url_for('book_parking') }}" class="btn btn-success btn-lg">Explore available lots</a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">Start parking smarter</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

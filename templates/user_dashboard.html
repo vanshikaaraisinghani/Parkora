@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}My Parking · Parkora{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <span class="text-success fw-bold text-uppercase small">Personal parking insights</span>
+        <h2 class="mb-0"><i class="bi bi-speedometer2"></i> Welcome, {{ current_user.username }}</h2>
+    </div>
+    {% if not current_reservation %}
+    <a href="{{ url_for('book_parking') }}" class="btn btn-success"><i class="bi bi-search me-1"></i> Find parking</a>
+    {% endif %}
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="metric-label">Completed visits</div>
+            <div class="display-6 fw-bold">{{ user_stats.total_visits }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="metric-label">Total spent</div>
+            <div class="display-6 fw-bold">₹{{ '%.0f'|format(user_stats.total_spent) }}</div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="metric-label">Average stay</div>
+            <div class="display-6 fw-bold">{{ user_stats.average_duration_minutes }}<small class="fs-6"> min</small></div>
+        </div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100"><div class="card-body">
+            <div class="metric-label">Favorite location</div>
+            <div class="h5 fw-bold mt-2 mb-0">{{ user_stats.favorite_location or 'Discover yours' }}</div>
+        </div></div>
+    </div>
+</div>
+
+<!-- Current Parking Status -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        {% if current_reservation %}
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-car-front-fill"></i> Current Parking Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Location:</strong> {{ current_reservation.spot.lot.prime_location_name }}</p>
+                        <p><strong>Address:</strong> {{ current_reservation.spot.lot.address }}</p>
+                        <p><strong>Spot Number:</strong> {{ current_reservation.spot.spot_number }}</p>
+                        <p><strong>Parked Since:</strong> {{ current_reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p><strong>Hourly Rate:</strong> ₹{{ current_reservation.parking_cost }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <h6>Duration:</h6>
+                            <p id="parking-duration" class="mb-0"></p>
+                            <h6 class="mt-2">Estimated Cost:</h6>
+                            <p id="estimated-cost" class="mb-0"></p>
+                        </div>
+                        <form method="POST" action="{{ url_for('release_parking') }}"
+                              onsubmit="return confirm('Release this parking spot and calculate the final cost?')">
+                            <button type="submit" class="btn btn-danger btn-lg w-100">
+                                <i class="bi bi-arrow-up-circle"></i> Release Parking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-p-square display-1 text-muted"></i>
+                <h4 class="mt-3">No Active Parking</h4>
+                <p class="text-muted">You don't have any active parking reservation.</p>
+                <a href="{{ url_for('book_parking') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-car-front"></i> Book Parking Now
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Parking History -->
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Parking History</h5>
+    </div>
+    <div class="card-body">
+        {% if parking_history %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Spot</th>
+                        <th>Parked On</th>
+                        <th>Released On</th>
+                        <th>Duration</th>
+                        <th>Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in parking_history %}
+                    <tr>
+                        <td>{{ reservation.spot.lot.prime_location_name }}</td>
+                        <td>{{ reservation.spot.spot_number }}</td>
+                        <td>{{ reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ reservation.leaving_timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            {% set duration = reservation.leaving_timestamp - reservation.parking_timestamp %}
+                            {% set hours = (duration.total_seconds() / 3600)|int %}
+                            {% set minutes = ((duration.total_seconds() % 3600) / 60)|int %}
+                            {{ hours }}h {{ minutes }}m
+                        </td>
+                        <td>₹{{ reservation.total_cost }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Summary Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <canvas id="monthlyChart" width="400" height="200"></canvas>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6>Total Parkings: <span class="badge bg-primary">{{ parking_history|length }}</span></h6>
+                        <h6>Total Spent: <span class="badge bg-success">₹{{ parking_history|sum(attribute='total_cost') }}</span></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">No parking history available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    {% if current_reservation %}
+    // Calculate and update parking duration and estimated cost
+    function updateParkingInfo() {
+        const parkingTime = new Date("{{ current_reservation.parking_timestamp }}");
+        const now = new Date();
+        const diff = now - parkingTime;
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('parking-duration').textContent = `${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+        
+        // Calculate estimated cost (round up to nearest hour)
+        const totalHours = Math.ceil(diff / (1000 * 60 * 60));
+        const estimatedCost = totalHours * {{ current_reservation.parking_cost }};
+        document.getElementById('estimated-cost').textContent = `₹${estimatedCost}`;
+    }
+    
+    // Update every second
+    updateParkingInfo();
+    setInterval(updateParkingInfo, 1000);
+    {% endif %}
+    
+    {% if parking_history %}
+    // Monthly parking chart
+    const monthlyData = {};
+    {% for reservation in parking_history %}
+        monthlyData["{{ reservation.parking_timestamp.strftime('%Y-%m') }}"] =
+            (monthlyData["{{ reservation.parking_timestamp.strftime('%Y-%m') }}"] || 0) + {{ reservation.total_cost }};
+    {% endfor %}
+    
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Object.keys(monthlyData),
+            datasets: [{
+                label: 'Monthly Parking Expenses (₹)',
+                data: Object.values(monthlyData),
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Parking Expenses'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

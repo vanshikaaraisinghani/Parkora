@@ -1,0 +1,194 @@
+:root {
+    --parkora-navy: #102a43;
+    --parkora-blue: #1665d8;
+    --parkora-teal: #00a896;
+    --parkora-mint: #dff8f3;
+    --parkora-amber: #ffb703;
+    --parkora-bg: #f4f7fb;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    color: var(--parkora-navy);
+    background: var(--parkora-bg);
+}
+
+.parkora-nav {
+    background: linear-gradient(110deg, #0b1f33, #123d5a 60%, #006d77);
+    box-shadow: 0 8px 28px rgba(16, 42, 67, 0.18);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    letter-spacing: -0.02em;
+}
+
+.navbar-brand small {
+    margin-left: 0.25rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    color: #062d2a;
+    background: #5eead4;
+}
+
+.card {
+    overflow: hidden;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 10px 26px rgba(16, 42, 67, 0.07);
+}
+
+.card:hover {
+    box-shadow: 0 14px 34px rgba(16, 42, 67, 0.11);
+}
+
+.btn-primary,
+.bg-primary {
+    border-color: var(--parkora-blue) !important;
+    background-color: var(--parkora-blue) !important;
+}
+
+.btn-success,
+.bg-success {
+    border-color: var(--parkora-teal) !important;
+    background-color: var(--parkora-teal) !important;
+}
+
+.parkora-hero {
+    overflow: hidden;
+    position: relative;
+    padding: 4.5rem;
+    border-radius: 28px;
+    color: #fff;
+    background: linear-gradient(125deg, #102a43 0%, #155e75 55%, #00a896 100%);
+    box-shadow: 0 24px 60px rgba(16, 42, 67, 0.25);
+}
+
+.parkora-hero::after {
+    content: '';
+    position: absolute;
+    right: -90px;
+    bottom: -130px;
+    width: 420px;
+    height: 420px;
+    border: 70px solid rgba(255, 255, 255, 0.09);
+    border-radius: 50%;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.hero-parking-grid {
+    display: grid;
+    position: relative;
+    z-index: 1;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+.hero-space {
+    display: grid;
+    min-height: 94px;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-radius: 12px;
+    color: #dff8f3;
+    font-size: 1.75rem;
+}
+
+.hero-space.occupied {
+    border-color: rgba(255, 183, 3, 0.85);
+    color: var(--parkora-amber);
+    background: rgba(255, 183, 3, 0.12);
+}
+
+.feature-card {
+    height: 100%;
+    padding: 1.7rem;
+    background: #fff;
+}
+
+.feature-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1rem;
+    place-items: center;
+    border-radius: 14px;
+    color: var(--parkora-teal);
+    background: var(--parkora-mint);
+    font-size: 1.4rem;
+}
+
+.recommended-card {
+    border: 2px solid rgba(0, 168, 150, 0.55);
+}
+
+.recommended-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 99px;
+    color: #075e54;
+    background: var(--parkora-mint);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.metric-label {
+    color: #627d98;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.parkora-footer {
+    color: rgba(255, 255, 255, 0.72);
+    background: #0b1f33;
+}
+
+@media (max-width: 768px) {
+    .parkora-hero {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .navbar-brand small {
+        display: none;
+    }
+}
+

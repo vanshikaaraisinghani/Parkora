@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Parkora{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/parkora.css') }}">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-card {
+            border-left: 4px solid;
+        }
+        .stats-card.primary {
+            border-left-color: #0d6efd;
+        }
+        .stats-card.success {
+            border-left-color: #198754;
+        }
+        .stats-card.warning {
+            border-left-color: #ffc107;
+        }
+        .stats-card.danger {
+            border-left-color: #dc3545;
+        }
+        .parking-spot {
+            display: inline-block;
+            width: 80px;
+            height: 60px;
+            margin: 5px;
+            text-align: center;
+            line-height: 60px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .parking-spot.available {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        .parking-spot.occupied {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark parkora-nav">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <span class="brand-mark"><i class="bi bi-p-square-fill"></i></span>
+                Parkora <small>smart parking</small>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('create_parking_lot') }}">
+                                    <i class="bi bi-plus-circle"></i> Add Parking Lot
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user_dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('book_parking') }}">
+                                    <i class="bi bi-car-front"></i> Book Parking
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4 flex-grow-1">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="parkora-footer text-center text-lg-start mt-5">
+        <div class="text-center p-3">
+            © {{ now.year }} Parkora · Find space. Save time.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
