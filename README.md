@@ -5,7 +5,6 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Tests](https://img.shields.io/badge/Tests-4%20passing-22C55E)](#testing)
 
 Parkora is a multi-user parking management platform that connects drivers with available parking and gives administrators a live view of their parking network. Drivers can discover the best lot, reserve an automatically allocated spot, monitor time and estimated cost, and review their parking history. Administrators can manage locations and capacity while tracking occupancy, users, and completed revenue.
 
